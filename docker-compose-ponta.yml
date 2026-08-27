@@ -1,0 +1,40 @@
+services:
+
+  ponta01:
+    build: ./arch
+    container_name: lab-ponta01
+    hostname: ponta01
+
+    environment:
+      LAB_HOSTNAME: ponta01
+      LAB_ROLE: Estacao de Trabalho
+      LAB_LOCATION: Setor Administrativo
+
+    ports:
+      - "18084:80"
+
+    cap_add:
+      - NET_ADMIN
+
+    networks:
+      labnet:
+        ipv4_address: 172.28.0.24
+
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pgrep zabbix_agentd >/dev/null && curl -fsS http://127.0.0.1/ >/dev/null"
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+    restart: unless-stopped
+
+
+networks:
+
+  labnet:
+    external: true
+    name: laboratorio-gerencia
